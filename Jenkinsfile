@@ -7,14 +7,14 @@ pipeline {
     }
     
     environment {
-        SCANNER_HOME=tool 'sonarqube-scanner'
+        SCANNER_HOME=tool 'sonar-scanner'
     }
     
     stages{
         
         stage("Git Checkout"){
             steps{
-                git branch: 'main', changelog: false, poll: false, url: 'hhttps://github.com/nithindevops/petclinic.git'
+                git branch: 'main', changelog: false, poll: false, url: 'https://github.com/nithindevops/petclinic.git'
             }
         }
         
@@ -33,7 +33,7 @@ pipeline {
         stage("Sonarqube Analysis "){
             steps{
                 withSonarQubeEnv('sonarqube-server') {
-                    sh ''' $SCANNER_HOME/bin/sonarqube-scanner -Dsonar.projectName=Petclinic \
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Petclinic \
                     -Dsonar.java.binaries=. \
                     -Dsonar.projectKey=Petclinic '''
     
@@ -50,8 +50,7 @@ pipeline {
        
        
         stage("Deploy To Tomcat"){
-            stage('Deploy to Tomcat') {
-            steps {
+                       steps {
                 deploy adapters: [tomcat9(credentialsId: 'tomcat', url: 'http://ec2-13-51-69-22.eu-north-1.compute.amazonaws.com:8081/manager/text', path: '/')], war: 'target/*.war'
             }
         }
